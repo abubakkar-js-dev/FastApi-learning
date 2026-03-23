@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Response
+from typing import List
 from . import schemas, models
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
 import uvicorn
 
 from .models import Blog
-from .schemas import BlogResponse
+from .schemas import BlogResponse,ShowBlog
 
 
 app = FastAPI()
@@ -35,7 +36,7 @@ def create(request: schemas.BlogResponse, db: Session = Depends(get_db)):
     return new_blog
 
 
-@app.get('/blogs', status_code=200)
+@app.get('/blogs', status_code=200,response_model=List[ShowBlog])
 def all(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
 
@@ -68,7 +69,7 @@ def delete(id, db: Session = Depends(get_db)):
 
 
 @app.put('/blogs/{id}', status_code=status.HTTP_202_ACCEPTED)
-def update(id, request: BlogResponse, db: Session = Depends(get_db)):
+def update(id, request: ShowBlog, db: Session = Depends(get_db)):
     updated_blog = {
         'title': request.title,
         'description': request.description,
