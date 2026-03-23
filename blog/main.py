@@ -3,10 +3,12 @@ from typing import List
 from . import schemas, models
 from .database import engine, SessionLocal
 from sqlalchemy.orm import Session
+from pwdlib import PasswordHash
 import uvicorn
 
 from .models import Blog
-from .schemas import BlogResponse,ShowBlog
+from .schemas import BlogResponse, ShowBlog, ShowUser
+from .utils.password import Hash
 
 
 app = FastAPI()
@@ -36,7 +38,7 @@ def create(request: schemas.BlogResponse, db: Session = Depends(get_db)):
     return new_blog
 
 
-@app.get('/blogs', status_code=200,response_model=List[ShowBlog])
+@app.get('/blogs', status_code=200, response_model=List[ShowBlog])
 def all(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
 
@@ -57,11 +59,11 @@ def show(id, response: Response, db: Session = Depends(get_db)):
 
 @app.delete('/blogs/{id}', status_code=status.HTTP_200_OK)
 def delete(id, db: Session = Depends(get_db)):
-    blog =  db.query(models.Blog).filter(models.Blog.id == id)
+    blog = db.query(models.Blog).filter(models.Blog.id == id)
 
     if not blog:
         raise HTTPException(f'Blog with {id} not found')
-    
+
     blog.delete(synchronize_session=False)
     db.commit()
 
@@ -75,11 +77,11 @@ def update(id, request: ShowBlog, db: Session = Depends(get_db)):
         'description': request.description,
         'published': request.published,
     }
-    blog =  db.query(models.Blog).filter(models.Blog.id == id)
+    blog = db.query(models.Blog).filter(models.Blog.id == id)
 
     if not blog:
         raise HTTPException(f'Blog with {id} not found')
-    
+
     blog.update(updated_blog)
     db.commit()
 
@@ -97,3 +99,39 @@ def update(id, request: ShowBlog, db: Session = Depends(get_db)):
 
 # if __name__ == "__main__":
 #     uvicorn.run(app,host='127.0.0.1',port=9000)
+
+
+@app.post('/users', response_model=ShowUser)
+def create_user(request: schemas.User, db: Session = Depends(get_db)):
+
+    hashedPass = Hash.hash_password(request.password)
+
+    new_user = models.User(
+        name=request.name,
+        email=request.email,
+        password=hashedPass,
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {'message': 'new user is created successfully', 'data': new_user}
+
+
+@app.get('/users', status_code=status.HTTP_200_OK, response_model=List[ShowUser])
+def all(db: Session = Depends(get_db)):
+    users = db.query(models.User).all()
+
+    return {'message': 'All users loaded', 'data': users}
+
+
+@app.get('/users/{id}', status_code=status.HTTP_200_OK)
+def show(id, response: Response,db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+
+    if not user:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {'details': f'User with {id} is not available'}
+
+    return user

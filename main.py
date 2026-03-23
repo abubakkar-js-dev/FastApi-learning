@@ -55,7 +55,7 @@ class Blog(BaseModel):
 @app.post('/blogs')
 def create_post(requestBlog: Blog):
     return {'data': requestBlog,'message': 'Post is created successfully'}
-
+ 
 
 
 # if __name__ == "__main__":
