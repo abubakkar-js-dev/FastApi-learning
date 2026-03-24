@@ -31,6 +31,7 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
         title=request.title,
         description=request.description,
         published=request.published,
+        user_id=request.user_id,
     )
     db.add(new_blog)
     db.commit()
@@ -38,10 +39,10 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
-@app.get('/blogs', status_code=200, response_model=List[ShowBlog],tags=['blogs'])
+@app.get('/blogs', status_code=200, tags=['blogs'])
 def all(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
-
+    
     return blogs
 
 
@@ -140,3 +141,4 @@ def show(id, password, response: Response, db: Session = Depends(get_db)):
        raise HTTPException(401,{'message': 'Invalid credential'})
 
     return user
+ 

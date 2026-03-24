@@ -6,6 +6,7 @@ class Blog(BaseModel):
     title: str
     description: str
     published: Optional[bool] = False
+    user_id: Optional[int] = None
 
 
 class User(BaseModel): 
@@ -24,7 +25,7 @@ class ShowUser(BaseModel):
 class ShowBlog(BaseModel):
     title: str
     description: str
-    creator: ShowUser
+    creator: Optional['ShowUser'] = None
 
     class Config():
         orm_mode = True
