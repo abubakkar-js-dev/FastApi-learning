@@ -23,4 +23,4 @@ def all(db: Session = Depends(database.get_db)):
 @router.get('/{id}', status_code=status.HTTP_200_OK, response_model=schemas.ShowUser)
 def show(id, password, response: Response, db: Session = Depends(database.get_db)):
     return user_repo.show(id,password,response,db)
- 
+  

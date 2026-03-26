@@ -24,8 +24,8 @@ def create(request, db: Session):
 
 def get_all(db: Session):
     users = db.query(models.User).all()
-
-    return users
+ 
+    return users 
 
 
 

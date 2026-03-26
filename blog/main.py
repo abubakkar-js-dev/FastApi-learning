@@ -9,7 +9,7 @@ import uvicorn
 from .models import Blog
 from .schemas import Blog, ShowBlog, ShowUser
 from .utils.password import Hash
-from .routers import blog,user
+from .routers import blog,user,authentication
 
 
 app = FastAPI()
@@ -17,6 +17,8 @@ app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
  
+ 
+app.include_router(authentication.router)
 app.include_router(blog.router)
 app.include_router(user.router)
 

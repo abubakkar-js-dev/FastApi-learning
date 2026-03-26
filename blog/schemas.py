@@ -16,22 +16,40 @@ class User(BaseModel):
 
 
 
+
+
 class ShowUser(BaseModel): 
     name: str
     email: str
     blogs: List[Blog] = []
 
     class Config:
-        orm_mode = True 
+        from_attributes = True
+        # orm_mode = True 
 
 class ShowBlog(BaseModel):
     title: str
     description: str 
-    creator: ShowUser
+    creator: Optional[ShowUser]
 
     class Config:
-        orm_mode = True
-    #  from_attributes = True
+        # orm_mode = True
+     from_attributes = True
+
+
+
+class Login(BaseModel):
+    username: str
+    password: str
+    
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
 
 
