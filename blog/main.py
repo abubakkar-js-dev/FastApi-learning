@@ -31,7 +31,7 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
         title=request.title,
         description=request.description,
         published=request.published,
-        user_id=request.user_id,
+        user_id = 1
     )
     db.add(new_blog)
     db.commit()
@@ -47,7 +47,7 @@ def all(db: Session = Depends(get_db)):
 
 
 # Get single blog
-@app.get('/blogs/{id}', status_code=200,tags=['blogs'])
+@app.get('/blogs/{id}', status_code=200,tags=['blogs'], response_model=ShowBlog)
 def show(id, response: Response, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
 
@@ -72,7 +72,7 @@ def delete(id, db: Session = Depends(get_db)):
 
 
 @app.put('/blogs/{id}', status_code=status.HTTP_202_ACCEPTED,tags=['blogs'])
-def update(id, request: ShowBlog, db: Session = Depends(get_db)):
+def update(id, request: schemas.Blog, db: Session = Depends(get_db)):
     updated_blog = {
         'title': request.title,
         'description': request.description,
@@ -127,7 +127,7 @@ def all(db: Session = Depends(get_db)):
     return users
 
 
-@app.get('/users/{id}', status_code=status.HTTP_200_OK, tags=['users'])
+@app.get('/users/{id}', status_code=status.HTTP_200_OK, tags=['users'], response_model=ShowUser)
 def show(id, password, response: Response, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == id).first()
 

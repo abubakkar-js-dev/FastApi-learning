@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+
 
 
 class Blog(BaseModel):
     title: str
     description: str
     published: Optional[bool] = False
-    user_id: Optional[int] = None
 
 
 class User(BaseModel): 
@@ -15,17 +15,23 @@ class User(BaseModel):
     password: str = Field(..., min_length=6, max_length=72)
 
 
-class ShowUser(BaseModel):
+
+class ShowUser(BaseModel): 
     name: str
     email: str
+    blogs: List[Blog] = []
 
-    class Config():
-        orm_mode = True
+    class Config:
+        orm_mode = True 
 
 class ShowBlog(BaseModel):
     title: str
-    description: str
-    creator: Optional['ShowUser'] = None
+    description: str 
+    creator: ShowUser
 
-    class Config():
+    class Config:
         orm_mode = True
+
+
+ShowBlog.model_rebuild()
+ShowUser.model_rebuild()
