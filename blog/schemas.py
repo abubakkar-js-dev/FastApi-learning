@@ -31,6 +31,8 @@ class ShowBlog(BaseModel):
 
     class Config:
         orm_mode = True
+    #  from_attributes = True
+
 
 
 ShowBlog.model_rebuild()
