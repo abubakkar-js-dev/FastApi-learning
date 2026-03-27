@@ -4,12 +4,28 @@ from pydantic import BaseModel
 import uvicorn
 from pydantic import BaseModel
 
-app = FastAPI()
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from blog.database import engine, Base
 
 
-@app.get('/')
-def home():
-    return {'greet': {"Hello world from python fast api server"}}
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup logic - create all tables using sync engine
+    Base.metadata.create_all(bind=engine)
+
+    yield
+
+    # Shutdown logic (optional)
+    engine.dispose()
+
+
+app = FastAPI(lifespan=lifespan)
+
+
+@app.get("/")
+async def root():
+    return {"message": "Connected to Neon PostgreSQL"}
 
 
 @app.get('/about')  # path operation decorator

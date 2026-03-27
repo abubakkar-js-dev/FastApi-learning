@@ -9,12 +9,12 @@ def get_all(db: Session):
     return blogs
 
 
-def create(request, db: Session):
+def create(request, db: Session, user_id: int):
     new_blog = models.Blog(
         title=request.title,
         description=request.description,
         published=request.published,
-        user_id=1
+        user_id=user_id
     )
     db.add(new_blog)
     db.commit()

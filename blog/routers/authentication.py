@@ -1,10 +1,15 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from sqlalchemy.orm import Session
 from .. import schemas, database, models
 from ..utils.password import Hash
-from ..utils.token import create_access_token,ACCESS_TOKEN_EXPIRE_MINUTES
+from ..utils.token import create_access_token
+from dotenv import load_dotenv
+load_dotenv()
+
+
 
 router = APIRouter(
     tags=['Authentication']
@@ -26,8 +31,9 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
                             detail='Invalid Password')
         
     # generate a jwt token and return it
+    ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES')
 
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=int(ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
     )

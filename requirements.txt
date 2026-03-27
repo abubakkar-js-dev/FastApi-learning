@@ -12,11 +12,13 @@ fastapi==0.135.1
 greenlet==3.3.2
 h11==0.16.0
 idna==3.11
+psycopg2-binary==2.9.10
 pwdlib==0.3.0
 pyasn1==0.6.3
 pycparser==3.0
 pydantic==2.12.5
 pydantic_core==2.41.5
+python-dotenv==1.0.1
 python-jose==3.5.0
 python-multipart==0.0.22
 rsa==4.9.1

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from .. import schemas,models,database
 from ..repository import blog
 from ..utils import oauth2
+from ..schemas import TokenData
 
 
 router = APIRouter(
@@ -19,8 +20,9 @@ def all(db: Session = Depends(database.get_db), current_user: schemas.User = Dep
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-def create(request: schemas.Blog, db: Session = Depends(database.get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
-    return blog.create(request,db)
+def create(request: schemas.Blog, db: Session = Depends(database.get_db), current_user: TokenData = Depends(oauth2.get_current_user)):
+    user = db.query(models.User).filter(models.User.email == current_user.email).first()
+    return blog.create(request, db, user.id)
 
 
 
